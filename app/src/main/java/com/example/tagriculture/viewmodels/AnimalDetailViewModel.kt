@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tagriculture.data.database.Animal
 import com.example.tagriculture.data.database.AppDatabase
 import com.example.tagriculture.data.database.Tag
+import com.example.tagriculture.data.database.WeightEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -15,8 +16,13 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
 
     private val animalDao = AppDatabase.getDatabase(application).animalDao()
     private val tagDao = AppDatabase.getDatabase(application).tagDao()
+    private val weightEntryDao = AppDatabase.getDatabase(application).weightEntryDao()
     private val _animalDetails = MutableLiveData<Animal?>()
     val animalDetails: LiveData<Animal?> = _animalDetails
+
+    fun getWeightHistory(animalId: Long): LiveData<List<WeightEntry>> {
+        return weightEntryDao.getWeightHistoryForAnimal(animalId)
+    }
 
     fun loadAnimalDetails(animalId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,6 +53,13 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
 
             val newAnimalId = animalDao.insertAnimal(newAnimal)
 
+            val initialWeightEntry = WeightEntry(
+                animalId = newAnimalId,
+                weight = birthWeight,
+                date = System.currentTimeMillis()
+            )
+            weightEntryDao.insertWeightEntry(initialWeightEntry)
+
             val newTag = Tag(
                 nfcSerialNumber = nfcTagId,
                 animalId = newAnimalId
@@ -61,17 +74,30 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
         newType: String,
         newName: String,
         newBreed: String,
-        newBirthDate: Long
+        newBirthDate: Long,
+        newCurrentWeight: Double
     ) {
+        val weightHasChanged = animalToUpdate.currentWeight != newCurrentWeight
+
         val updatedAnimal = animalToUpdate.copy(
             animalType = newType,
             name = newName,
             breed = newBreed,
-            birthDate = newBirthDate
+            birthDate = newBirthDate,
+            currentWeight = newCurrentWeight
         )
 
         viewModelScope.launch(Dispatchers.IO) {
             animalDao.updateAnimal(updatedAnimal)
+
+            if (weightHasChanged) {
+                val newWeightEntry = WeightEntry(
+                    animalId = updatedAnimal.id,
+                    weight = newCurrentWeight,
+                    date = System.currentTimeMillis()
+                )
+                weightEntryDao.insertWeightEntry(newWeightEntry)
+            }
         }
     }
 }

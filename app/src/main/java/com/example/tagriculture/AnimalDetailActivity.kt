@@ -16,6 +16,11 @@ import java.util.Date
 import java.util.Locale
 import androidx.activity.viewModels
 import com.example.tagriculture.viewmodels.AnimalDetailViewModel
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.example.tagriculture.data.database.WeightEntry
 
 class AnimalDetailActivity : AppCompatActivity() {
 
@@ -51,6 +56,12 @@ class AnimalDetailActivity : AppCompatActivity() {
         }
 
         if (animalId != null) {
+            viewModel.getWeightHistory(animalId!!).observe(this, { weightHistory ->
+                if (weightHistory.isNotEmpty()) {
+                    setupWeightChart(weightHistory)
+                }
+            })
+
             title = "View / Edit Animal"
             Log.d("AnimalDetail", "Editing mode for animal ID: $animalId")
             viewModel.loadAnimalDetails(animalId!!)
@@ -74,7 +85,9 @@ class AnimalDetailActivity : AppCompatActivity() {
                 val breedEditText: TextInputEditText = findViewById(R.id.edit_text_breed)
                 val birthDateEditText: TextInputEditText = findViewById(R.id.edit_text_birth_date)
                 val birthWeightEditText: TextInputEditText = findViewById(R.id.edit_text_birth_weight)
+                val currentWeightEditText: TextInputEditText = findViewById(R.id.edit_text_current_weight)
 
+                currentWeightEditText.setText(it.currentWeight.toString())
                 nameEditText.setText(it.name)
                 breedEditText.setText(it.breed)
                 animalTypeSpinner.setText(it.animalType, false)
@@ -124,6 +137,8 @@ class AnimalDetailActivity : AppCompatActivity() {
         val name = nameEditText.text.toString()
         val breed = breedEditText.text.toString()
         val birthWeight = birthWeightEditText.text.toString().toDoubleOrNull() ?: 0.0
+        val currentWeightEditText: TextInputEditText = findViewById(R.id.edit_text_current_weight)
+        val currentWeight = currentWeightEditText.text.toString().toDoubleOrNull() ?: 0.0
 
         if (animalId != null) {
             viewModel.animalDetails.value?.let { existingAnimal ->
@@ -132,7 +147,8 @@ class AnimalDetailActivity : AppCompatActivity() {
                     newType = type,
                     newName = name,
                     newBreed = breed,
-                    newBirthDate = selectedBirthDate!!
+                    newBirthDate = selectedBirthDate!!,
+                    newCurrentWeight = currentWeight
                 )
                 Toast.makeText(this, "$name's details have been updated!", Toast.LENGTH_LONG).show()
             }
@@ -177,5 +193,36 @@ class AnimalDetailActivity : AppCompatActivity() {
         }
 
         datePicker.show(supportFragmentManager, "DATE_PICKER_TAG")
+    }
+
+    private fun setupWeightChart(history: List<WeightEntry>) {
+        val lineChart: LineChart = findViewById(R.id.weight_chart)
+
+        val entries = ArrayList<Entry>()
+        history.forEach {
+            entries.add(Entry(it.date.toFloat(), it.weight.toFloat()))
+        }
+
+        val dataSet = LineDataSet(entries, "Weight (kg)").apply {
+            color = getColor(R.color.brand_green)
+            valueTextColor = getColor(R.color.md_theme_onSurface)
+            setCircleColor(getColor(R.color.md_theme_primary))
+            circleHoleColor = getColor(R.color.md_theme_primary)
+            lineWidth = 2f
+            circleRadius = 4f
+            valueTextSize = 10f
+        }
+
+        val lineData = LineData(dataSet)
+
+        lineChart.apply {
+            data = lineData
+            description.isEnabled = false
+            legend.isEnabled = false
+            axisRight.isEnabled = false
+            xAxis.textColor = getColor(R.color.md_theme_onSurfaceVariant)
+            axisLeft.textColor = getColor(R.color.md_theme_onSurfaceVariant)
+            invalidate()
+        }
     }
 }

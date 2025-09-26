@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Animal::class, Tag::class], version = 1, exportSchema = false)
+@Database(entities = [Animal::class, Tag::class, WeightEntry::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun animalDao(): AnimalDao
     abstract fun tagDao(): TagDao
+    abstract fun weightEntryDao(): WeightEntryDao
 
     companion object {
         @Volatile
