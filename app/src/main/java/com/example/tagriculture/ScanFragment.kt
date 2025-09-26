@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -25,13 +25,26 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
 
     private val scanViewModel: ScanViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val animalAdapter = AnimalAdapter { selectedAnimal ->
-        Log.d("GridClick", "Clicked on animal ID: ${selectedAnimal.id}")
-        val intent = Intent(requireActivity(), AnimalDetailActivity::class.java).apply {
-            putExtra("ANIMAL_ID", selectedAnimal.id)
+
+    private val animalAdapter = AnimalAdapter(
+        onAnimalClicked = { selectedAnimal ->
+            Log.d("GridClick", "Clicked on animal ID: ${selectedAnimal.id}")
+            val intent = Intent(requireActivity(), AnimalDetailActivity::class.java).apply {
+                putExtra("ANIMAL_ID", selectedAnimal.id)
+            }
+            startActivity(intent)
+        },
+        onSearchQueryChanged = { query ->
+            scanViewModel.setSearchQuery(query)
+        },
+        onFilterClicked = { anchorView ->
+            showFilterMenu(anchorView)
+        },
+        onSortClicked = { anchorView ->
+            showSortMenu(anchorView)
         }
-        startActivity(intent)
-    }
+    )
+
     private var nfcAdapter: NfcAdapter? = null
 
     override fun onCreateView(
@@ -41,17 +54,22 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
         nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
         val recyclerView: RecyclerView = view.findViewById(R.id.livestock_recycler_view)
         recyclerView.adapter = animalAdapter
-
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.grid_spacing)
+        val layoutManager = androidx.recyclerview.widget.GridLayoutManager(requireContext(), 2)
+        layoutManager.spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == 0) 2 else 1
+            }
+        }
+        recyclerView.layoutManager = layoutManager
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, spacingInPixels, true))
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        scanViewModel.allAnimals.observe(viewLifecycleOwner, Observer { animals ->
+        scanViewModel.filteredAndSortedAnimals.observe(viewLifecycleOwner, Observer { animals ->
             animalAdapter.setData(animals)
         })
 
@@ -81,6 +99,30 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
                 mainViewModel.onScanResultProcessed()
             }
         })
+    }
+
+    private fun showFilterMenu(anchorView: View) {
+        val popup = PopupMenu(requireContext(), anchorView)
+        val filterOptions = listOf("All", "Cattle", "Sheep", "Goat", "Pig", "Horse", "Buffalo")
+        filterOptions.forEach { popup.menu.add(it) }
+
+        popup.setOnMenuItemClickListener { menuItem ->
+            scanViewModel.setFilterType(menuItem.title.toString())
+            true
+        }
+        popup.show()
+    }
+
+    private fun showSortMenu(anchorView: View) {
+        val popup = PopupMenu(requireContext(), anchorView)
+        val sortOptions = listOf("Name (A-Z)", "Name (Z-A)", "Weight (High-Low)", "Weight (Low-High)")
+        sortOptions.forEach { popup.menu.add(it) }
+
+        popup.setOnMenuItemClickListener { menuItem ->
+            scanViewModel.setSortOrder(menuItem.title.toString())
+            true
+        }
+        popup.show()
     }
 
     override fun onResume() {

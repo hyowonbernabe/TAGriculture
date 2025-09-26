@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
-    android:fitsSystemWindows="true"
     tools:context=".ScanFragment">
 
     <!-- Lottie Animation for the scanning effect -->
@@ -42,18 +41,17 @@
                 android:layout_height="4dp"
                 android:background="@color/brand_green"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginTop="16dp"/>
 
             <!-- RecyclerView for the grid of animals -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/livestock_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="2"
-                tools:listitem="@layout/item_animal_card" /> <!-- We will create this layout next -->
+                app:spanCount="2" />
 
         </LinearLayout>
 

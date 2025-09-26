@@ -1,68 +1,103 @@
 package com.example.tagriculture.adapters
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tagriculture.R
 import com.example.tagriculture.data.database.Animal
-import android.net.Uri
+import com.google.android.material.textfield.TextInputEditText
 import java.io.File
 
-class AnimalAdapter(private val listener: (Animal) -> Unit) : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
+class AnimalAdapter(
+    private val onAnimalClicked: (Animal) -> Unit,
+    private val onSearchQueryChanged: (String) -> Unit,
+    private val onFilterClicked: (View) -> Unit,
+    private val onSortClicked: (View) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var animalList = emptyList<Animal>()
 
-    class AnimalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val animalImage: ImageView = itemView.findViewById(R.id.animal_image)
-        val animalName: TextView = itemView.findViewById(R.id.animal_name)
-        val animalInfo: TextView = itemView.findViewById(R.id.animal_info)
-        val animalWeight: TextView = itemView.findViewById(R.id.animal_weight)
+    companion object {
+        private const val VIEW_TYPE_HEADER = 0
+        private const val VIEW_TYPE_ANIMAL = 1
+    }
 
-        fun bind(animal: Animal, listener: (Animal) -> Unit) {
-            itemView.setOnClickListener { listener(animal) }
+    inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val searchInput: TextInputEditText = itemView.findViewById(R.id.search_input)
+        private val filterButton: ImageButton = itemView.findViewById(R.id.btn_filter)
+        private val sortButton: ImageButton = itemView.findViewById(R.id.btn_sort)
+
+        fun bind() {
+            // Set up listeners that call the lambdas passed to the adapter
+            searchInput.addTextChangedListener { text ->
+                onSearchQueryChanged(text.toString())
+            }
+            filterButton.setOnClickListener { onFilterClicked(it) }
+            sortButton.setOnClickListener { onSortClicked(it) }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimalViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_animal_card, parent, false)
-        return AnimalViewHolder(view)
+    inner class AnimalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val animalImage: ImageView = itemView.findViewById(R.id.animal_image)
+        private val animalName: TextView = itemView.findViewById(R.id.animal_name)
+        private val animalInfo: TextView = itemView.findViewById(R.id.animal_info)
+        private val animalWeight: TextView = itemView.findViewById(R.id.animal_weight)
+
+        fun bind(animal: Animal) {
+            animalName.text = animal.name
+            animalInfo.text = "${animal.animalType}, ${animal.breed}"
+            animalWeight.text = "${animal.currentWeight} kg"
+            itemView.setOnClickListener { onAnimalClicked(animal) }
+
+            if (!animal.pictureUri.isNullOrEmpty()) {
+                val uri = Uri.parse(animal.pictureUri)
+                if (uri.scheme == "android.resource") {
+                    animalImage.setImageURI(uri)
+                } else {
+                    val imageFile = File(animal.pictureUri!!)
+                    if (imageFile.exists()) animalImage.setImageURI(Uri.fromFile(imageFile))
+                    else animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+                }
+            } else {
+                animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+            }
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 0) VIEW_TYPE_HEADER else VIEW_TYPE_ANIMAL
     }
 
     override fun getItemCount(): Int {
-        return animalList.size
+        return animalList.size + 1
     }
 
-    override fun onBindViewHolder(holder: AnimalViewHolder, position: Int) {
-        val currentAnimal = animalList[position]
-
-        holder.animalName.text = currentAnimal.name
-        holder.animalInfo.text = "${currentAnimal.animalType}, ${currentAnimal.breed}"
-        holder.animalWeight.text = "${currentAnimal.currentWeight} kg"
-        if (!currentAnimal.pictureUri.isNullOrEmpty()) {
-            val uriString = currentAnimal.pictureUri!!
-            val uri = Uri.parse(uriString)
-
-            // Check if the URI is a local file path or a resource URI
-            if (uri.scheme == "android.resource") {
-                // It's a mock data image from drawables
-                holder.animalImage.setImageURI(uri)
-            } else {
-                val imageFile = File(uriString)
-                if (imageFile.exists()) {
-                    holder.animalImage.setImageURI(Uri.fromFile(imageFile))
-                } else {
-                    holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground) // Fallback
-                }
-            }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == VIEW_TYPE_HEADER) {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_search_header, parent, false)
+            HeaderViewHolder(view)
         } else {
-            holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground) // Fallback
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_animal_card, parent, false)
+            AnimalViewHolder(view)
         }
+    }
 
-        holder.bind(currentAnimal, listener)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is HeaderViewHolder) {
+            holder.bind()
+        } else if (holder is AnimalViewHolder) {
+            val animal = animalList[position - 1]
+            holder.bind(animal)
+        }
     }
 
     fun setData(animals: List<Animal>) {
