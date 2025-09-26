@@ -22,12 +22,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.tagriculture.data.database.WeightEntry
 import com.example.tagriculture.viewmodels.AnimalDetailViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
@@ -61,7 +61,10 @@ class AnimalDetailActivity : AppCompatActivity() {
             Log.d("PhotoPicker", "Selected URI: $uri")
             val permanentUri = saveImageToInternalStorage(uri)
             selectedImageUri = permanentUri
-            animalImageView.setImageURI(Uri.parse(permanentUri))
+            // Convert path to Uri to display it
+            permanentUri?.let {
+                animalImageView.setImageURI(Uri.fromFile(File(it)))
+            }
         } else {
             Log.d("PhotoPicker", "No media selected")
         }
@@ -80,6 +83,7 @@ class AnimalDetailActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.detail_container)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Apply padding to bottom only, AppBarLayout handles the top
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, systemBars.bottom)
             insets
         }
@@ -168,11 +172,7 @@ class AnimalDetailActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.weightHistory.observe(this) { history ->
-            if (!history.isNullOrEmpty()) {
-                setupWeightChart(history)
-            }
-        }
+        // THE REDUNDANT OBSERVER HAS BEEN REMOVED FROM HERE
 
         val healthAlertCard: MaterialCardView = findViewById(R.id.health_alert_card)
         viewModel.healthAlert.observe(this) { showAlert ->
@@ -193,6 +193,11 @@ class AnimalDetailActivity : AppCompatActivity() {
                 } else {
                     readinessCard.visibility = View.GONE
                 }
+                // This is the single, correct place to update the chart
+                setupWeightChart(it.chartData)
+
+                val ageTextView: TextView = findViewById(R.id.text_age)
+                ageTextView.text = it.ageString
             }
         }
     }
@@ -280,28 +285,47 @@ class AnimalDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupWeightChart(history: List<WeightEntry>) {
+    private fun setupWeightChart(chartData: com.example.tagriculture.analytics.ChartData) {
         val lineChart: LineChart = findViewById(R.id.weight_chart)
-        val entries = ArrayList<Entry>()
-        history.forEach {
-            entries.add(Entry(it.date.toFloat(), it.weight.toFloat()))
-        }
-        val dataSet = LineDataSet(entries, "Weight (kg)").apply {
+        val actualDataSet = LineDataSet(chartData.actualHistory, "Actual Weight").apply {
             color = getColor(R.color.brand_green)
             valueTextColor = getColor(R.color.md_theme_onSurface)
-            setCircleColor(getColor(R.color.md_theme_primary))
-            circleHoleColor = getColor(R.color.md_theme_primary)
-            lineWidth = 2f
+            setCircleColor(getColor(R.color.brand_green))
+            circleHoleColor = getColor(R.color.brand_green)
+            lineWidth = 2.5f
             circleRadius = 4f
-            valueTextSize = 10f
+            valueTextSize = 0f
         }
-        val lineData = LineData(dataSet)
+        val projectedDataSet = LineDataSet(chartData.projectedHistory, "Projected Weight").apply {
+            color = getColor(R.color.md_theme_tertiary)
+            valueTextColor = getColor(R.color.md_theme_tertiary)
+            setCircleColor(getColor(R.color.md_theme_tertiary))
+            enableDashedLine(10f, 5f, 0f)
+            lineWidth = 2f
+            circleRadius = 3f
+            valueTextSize = 9f
+        }
+        val idealDataSet = LineDataSet(chartData.idealCurve, "Ideal Growth").apply {
+            color = getColor(R.color.md_theme_outline)
+            enableDashedLine(20f, 10f, 0f)
+            lineWidth = 1.5f
+            setDrawCircles(false)
+            setDrawValues(false)
+        }
+        val lineData = LineData(actualDataSet, idealDataSet, projectedDataSet)
+        val xAxisFormatter = object : ValueFormatter() {
+            private val format = SimpleDateFormat("MMM ''yy", Locale.US)
+            override fun getFormattedValue(value: Float): String {
+                return format.format(Date(value.toLong()))
+            }
+        }
         lineChart.apply {
             data = lineData
             description.isEnabled = false
-            legend.isEnabled = false
+            legend.isEnabled = true
             axisRight.isEnabled = false
             xAxis.textColor = getColor(R.color.md_theme_onSurfaceVariant)
+            xAxis.valueFormatter = xAxisFormatter
             axisLeft.textColor = getColor(R.color.md_theme_onSurfaceVariant)
             invalidate()
         }
