@@ -19,7 +19,8 @@ class AnimalAdapter(
     private val onAnimalClicked: (Animal) -> Unit,
     private val onSearchQueryChanged: (String) -> Unit,
     private val onFilterClicked: (View) -> Unit,
-    private val onSortClicked: (View) -> Unit
+    private val onSortClicked: (View) -> Unit,
+    private val onCalendarClicked: (View) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var animalList = emptyList<Animal>()
@@ -33,6 +34,7 @@ class AnimalAdapter(
         private val searchInput: TextInputEditText = itemView.findViewById(R.id.search_input)
         private val filterButton: ImageButton = itemView.findViewById(R.id.btn_filter)
         private val sortButton: ImageButton = itemView.findViewById(R.id.btn_sort)
+        private val calendarButton: ImageButton = itemView.findViewById(R.id.btn_calendar)
 
         fun bind() {
             // Set up listeners that call the lambdas passed to the adapter
@@ -41,6 +43,7 @@ class AnimalAdapter(
             }
             filterButton.setOnClickListener { onFilterClicked(it) }
             sortButton.setOnClickListener { onSortClicked(it) }
+            calendarButton.setOnClickListener { onCalendarClicked(it) }
         }
     }
 

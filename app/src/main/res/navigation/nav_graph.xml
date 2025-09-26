@@ -19,7 +19,13 @@
         app:enterAnim="@anim/slide_in_up"
         app:exitAnim="@anim/fade_out"
         app:popEnterAnim="@anim/slide_in_up"
-        app:popExitAnim="@anim/fade_out" />
+        app:popExitAnim="@anim/fade_out">
+        <action android:id="@+id/action_scanFragment_to_salesCalendarFragment" app:destination="@id/salesCalendarFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/salesCalendarFragment"
+        android:name="com.example.tagriculture.SalesCalendarFragment"
+        android:label="SalesCalendarFragment" />
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="com.example.tagriculture.NotificationsFragment"

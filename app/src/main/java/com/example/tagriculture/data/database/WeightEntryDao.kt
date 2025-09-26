@@ -13,4 +13,7 @@ interface WeightEntryDao {
 
     @Query("SELECT * FROM weight_entries WHERE animalId = :animalId ORDER BY date ASC")
     fun getWeightHistoryForAnimal(animalId: Long): LiveData<List<WeightEntry>>
+
+    @Query("SELECT * FROM weight_entries WHERE animalId = :animalId ORDER BY date ASC")
+    fun getWeightHistoryForAnimalSync(animalId: Long): List<WeightEntry>
 }

@@ -20,6 +20,7 @@ import com.example.tagriculture.ui.NewTagDialogFragment
 import com.example.tagriculture.viewmodels.MainViewModel
 import com.example.tagriculture.viewmodels.ScanResult
 import com.example.tagriculture.viewmodels.ScanViewModel
+import androidx.navigation.fragment.findNavController
 
 class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
 
@@ -42,6 +43,9 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
         },
         onSortClicked = { anchorView ->
             showSortMenu(anchorView)
+        },
+        onCalendarClicked = {
+            findNavController().navigate(R.id.action_scanFragment_to_salesCalendarFragment)
         }
     )
 

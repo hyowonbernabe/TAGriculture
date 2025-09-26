@@ -22,6 +22,35 @@ data class AnalyticsReport(
 
 object AnalyticsEngine {
 
+    fun getProjectedMarketDate(animal: Animal, history: List<WeightEntry>): Long? {
+        val targetWeight = when (animal.animalType) {
+            "Cattle" -> 450.0
+            "Pig" -> 100.0
+            else -> return null
+        }
+
+        if (animal.currentWeight >= targetWeight) return null
+
+        if (history.size < 2) return null
+
+        val sortedHistory = history.sortedBy { it.date }
+        val firstEntry = sortedHistory.first()
+        val lastEntry = sortedHistory.last()
+
+        val durationDays = TimeUnit.MILLISECONDS.toDays(lastEntry.date - firstEntry.date)
+        if (durationDays < 1) return null
+
+        val totalGain = lastEntry.weight - firstEntry.weight
+        val adg = totalGain / durationDays
+
+        if (adg <= 0) return null
+
+        val weightNeeded = targetWeight - animal.currentWeight
+        val daysToTarget = (weightNeeded / adg).toLong()
+
+        return System.currentTimeMillis() + TimeUnit.DAYS.toMillis(daysToTarget)
+    }
+
     fun generateReport(animal: Animal, history: List<WeightEntry>): AnalyticsReport {
         val actualHistoryEntries = history.map { Entry(it.date.toFloat(), it.weight.toFloat()) }
 
