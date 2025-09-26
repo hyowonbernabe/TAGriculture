@@ -11,7 +11,7 @@ import androidx.room.Update
 interface AnimalDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAnimal(animal: Animal)
+    suspend fun insertAnimal(animal: Animal): Long
 
     @Update
     suspend fun updateAnimal(animal: Animal)
