@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
     tools:context=".ScanFragment">
 
     <!-- Lottie Animation for the scanning effect -->
@@ -24,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet_background"
+        android:elevation="8dp"
         app:layout_behavior="@string/bottom_sheet_behavior"
         app:behavior_peekHeight="120dp"
         app:behavior_hideable="false">
@@ -38,7 +40,7 @@
             <View
                 android:layout_width="40dp"
                 android:layout_height="4dp"
-                android:background="@android:color/darker_gray"
+                android:background="@color/brand_green"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"/>

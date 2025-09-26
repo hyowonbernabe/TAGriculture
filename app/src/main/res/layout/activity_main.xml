@@ -5,9 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity"
+    android:id="@+id/main_container">
 
-    <!-- This container will hold our fragments (Home, Scan, etc.) -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -18,17 +19,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/nav_graph" /> <!-- We will create nav_graph soon -->
+        app:navGraph="@navigation/nav_graph" />
 
-    <!-- The bottom navigation bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
+        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/bottom_nav_menu" /> <!-- We will create this menu soon -->
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

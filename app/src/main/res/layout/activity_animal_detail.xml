@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurfaceContainerLowest"
-    tools:context=".AnimalDetailActivity">
+    tools:context=".AnimalDetailActivity"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:id="@+id/detail_container">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -15,9 +17,10 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
+            android:elevation="8dp"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_launcher_foreground" />
+            app:navigationIcon="@drawable/ic_arrow_back" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

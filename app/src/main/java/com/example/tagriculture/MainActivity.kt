@@ -13,14 +13,26 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.tagriculture.viewmodels.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_container)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, v.paddingTop, systemBars.right, v.paddingBottom)
+            insets
+        }
 
         Log.d("DEBUG_NFC", "MainActivity onCreate")
 

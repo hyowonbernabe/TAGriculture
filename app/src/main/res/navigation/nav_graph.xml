@@ -15,7 +15,11 @@
     <fragment
         android:id="@+id/scanFragment"
         android:name="com.example.tagriculture.ScanFragment"
-        android:label="ScanFragment" />
+        android:label="ScanFragment"
+        app:enterAnim="@anim/slide_in_up"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/slide_in_up"
+        app:popExitAnim="@anim/fade_out" />
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="com.example.tagriculture.NotificationsFragment"

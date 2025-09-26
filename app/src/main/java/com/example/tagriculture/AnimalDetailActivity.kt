@@ -14,6 +14,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -31,6 +32,9 @@ import com.example.tagriculture.data.database.WeightEntry
 import com.google.android.material.card.MaterialCardView
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.io.File
 import java.io.FileOutputStream
 
@@ -49,6 +53,8 @@ class AnimalDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_animal_detail)
+
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
