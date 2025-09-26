@@ -1,0 +1,10 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- This list covers most common NFC tag technologies -->
+    <tech-list>
+        <tech>android.nfc.tech.NfcA</tech>
+        <tech>android.nfc.tech.NfcB</tech>
+        <tech>android.nfc.tech.NfcF</tech>
+        <tech>android.nfc.tech.NfcV</tech>
+        <tech>android.nfc.tech.IsoDep</tech>
+    </tech-list>
+</resources>

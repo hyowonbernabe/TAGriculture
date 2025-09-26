@@ -1,59 +1,76 @@
 package com.example.tagriculture
 
+import android.app.PendingIntent
+import android.content.Intent
+import android.nfc.NfcAdapter
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tagriculture.adapters.AnimalAdapter
+import com.example.tagriculture.viewmodels.MainViewModel
+import com.example.tagriculture.viewmodels.ScanViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ScanFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ScanFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val scanViewModel: ScanViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+
+    private lateinit var recyclerView: RecyclerView
+    private val animalAdapter = AnimalAdapter()
+
+    private var nfcAdapter: NfcAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scan, container, false)
+        val view = inflater.inflate(R.layout.fragment_scan, container, false)
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
+
+        recyclerView = view.findViewById(R.id.livestock_recycler_view)
+        recyclerView.adapter = animalAdapter
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ScanFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ScanFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        scanViewModel.allAnimals.observe(viewLifecycleOwner, Observer { animals ->
+            animalAdapter.setData(animals)
+        })
+
+        mainViewModel.nfcTagId.observe(viewLifecycleOwner, Observer { tagId ->
+            tagId?.let {
+                Log.d("NFC", "ScanFragment received tag: $it")
+                Toast.makeText(requireContext(), "Scanned Tag: $it", Toast.LENGTH_LONG).show()
+                mainViewModel.onNfcTagProcessed()
             }
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nfcAdapter?.let {
+            val intent = Intent(requireActivity(), requireActivity().javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            val pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            it.enableForegroundDispatch(requireActivity(), pendingIntent, null, null)
+            Log.d("NFC", "Foreground dispatch enabled in ScanFragment")
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcAdapter?.disableForegroundDispatch(requireActivity())
+        Log.d("NFC", "Foreground dispatch disabled in ScanFragment")
     }
 }
