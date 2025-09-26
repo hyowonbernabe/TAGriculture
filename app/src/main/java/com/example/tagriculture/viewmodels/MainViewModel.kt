@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 sealed class ScanResult {
     data class KnownAnimal(val animalId: Long) : ScanResult()
     data class NewTag(val tagId: String) : ScanResult()
-    object UnassignedTag : ScanResult()
+    data class UnassignedTag(val tagId: String) : ScanResult()
 }
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,7 +33,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 if (localAnimalId != null) {
                     ScanResult.KnownAnimal(localAnimalId)
                 } else {
-                    ScanResult.UnassignedTag
+                    ScanResult.UnassignedTag(existingTag.nfcSerialNumber)
                 }
             } else {
                 ScanResult.NewTag(tagId)

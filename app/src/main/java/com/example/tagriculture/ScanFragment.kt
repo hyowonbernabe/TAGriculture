@@ -20,7 +20,7 @@ import com.example.tagriculture.viewmodels.MainViewModel
 import com.example.tagriculture.viewmodels.ScanResult
 import com.example.tagriculture.viewmodels.ScanViewModel
 
-class ScanFragment : Fragment() {
+class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
 
     private val scanViewModel: ScanViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
@@ -51,12 +51,16 @@ class ScanFragment : Fragment() {
                         Toast.makeText(requireContext(), "Known Animal Scanned! ID: ${it.animalId}", Toast.LENGTH_LONG).show()
                     }
                     is ScanResult.NewTag -> {
-                        Log.d("DEBUG_NFC", "5. ScanFragment - Observer received result: $it. SHOWING DIALOG.")
-                        NewTagDialogFragment().show(parentFragmentManager, "NewTagDialog")
+                        Log.d("NFC", "New tag detected: ${it.tagId}. Showing dialog.")
+                        val dialog = NewTagDialogFragment.newInstance(it.tagId)
+                        dialog.setTargetFragment(this@ScanFragment, 0)
+                        dialog.show(parentFragmentManager, "NewTagDialog")
                     }
                     is ScanResult.UnassignedTag -> {
-                        Log.d("DEBUG_NFC", "5. ScanFragment - Observer received result: $it. SHOWING DIALOG.")
-                        NewTagDialogFragment().show(parentFragmentManager, "NewTagDialog")
+                        Log.d("NFC", "Unassigned tag detected: ${it.tagId}. Showing dialog.")
+                        val dialog = NewTagDialogFragment.newInstance(it.tagId)
+                        dialog.setTargetFragment(this@ScanFragment, 0)
+                        dialog.show(parentFragmentManager, "NewTagDialog")
                     }
                 }
                 mainViewModel.onScanResultProcessed()
@@ -85,5 +89,13 @@ class ScanFragment : Fragment() {
         super.onPause()
         nfcAdapter?.disableForegroundDispatch(requireActivity())
         Log.d("NFC", "Foreground dispatch disabled in ScanFragment")
+    }
+
+    override fun onRegisterClicked(tagId: String) {
+        Log.d("NFC", "Register button clicked for tag: $tagId")
+        val intent = Intent(requireActivity(), AnimalDetailActivity::class.java).apply {
+            putExtra("NFC_TAG_ID", tagId)
+        }
+        startActivity(intent)
     }
 }
