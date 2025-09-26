@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.example.tagriculture.viewmodels.AnimalDetailViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
@@ -74,6 +75,8 @@ class AnimalDetailActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_animal_detail)
+
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
