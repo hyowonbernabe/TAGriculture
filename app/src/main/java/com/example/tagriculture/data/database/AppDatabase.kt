@@ -65,20 +65,43 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             // Helper to generate a weight history
-            suspend fun generateWeightHistory(animalId: Long, birthDate: Long, birthWeight: Double, currentWeight: Double) {
+            suspend fun generateWeightHistory(
+                animalId: Long,
+                birthDate: Long,
+                birthWeight: Double,
+                currentWeight: Double,
+                forceWeightDrop: Boolean = false // New parameter to trigger health alerts
+            ) {
                 val now = System.currentTimeMillis()
                 val totalLifeSpan = now - birthDate
-                val numEntries = 4 // Creates 5 total points including birth weight
+                val numEntries = 5 // Create more data points
+                val random = java.util.Random(animalId) // Seed with animalId for consistent randomness
+
+                val weightGain = currentWeight - birthWeight
+                val averageGainPerInterval = weightGain / numEntries
 
                 for (i in 0..numEntries) {
                     val progress = i.toFloat() / numEntries
                     val entryDate = birthDate + (totalLifeSpan * progress).toLong()
-                    val entryWeight = birthWeight + (currentWeight - birthWeight) * progress
+
+                    // Calculate a base weight with some random oscillation
+                    val wiggle = (averageGainPerInterval * 0.5) * (random.nextDouble() - 0.5) // +/- 25% of average gain
+                    val entryWeight = birthWeight + (averageGainPerInterval * i) + wiggle
 
                     weightEntryDao.insertWeightEntry(WeightEntry(
                         animalId = animalId,
                         weight = String.format(Locale.US, "%.1f", entryWeight).toDouble(),
                         date = entryDate
+                    ))
+                }
+
+                // If forced, add a final entry with a slightly lower weight to trigger the alert
+                if (forceWeightDrop) {
+                    val lastWeight = currentWeight - (currentWeight * 0.02) // A 2% drop
+                    weightEntryDao.insertWeightEntry(WeightEntry(
+                        animalId = animalId,
+                        weight = String.format(Locale.US, "%.1f", lastWeight).toDouble(),
+                        date = now + 1000 // Ensure it's the very last entry
                     ))
                 }
             }
@@ -103,7 +126,7 @@ abstract class AppDatabase : RoomDatabase() {
                 locationCity = "San Fernando", locationMunicipal = "Pampanga",
                 pictureUri = getDrawableUri("listing_2")
             ))
-            generateWeightHistory(animalId, kalboBirthDate, 35.0, 350.0)
+            generateWeightHistory(animalId, kalboBirthDate, 35.0, 350.0, forceWeightDrop = true)
 
             // Listing 3: Sultan
             val sultanBirthDate = calculateBirthDate(3.5)
@@ -153,7 +176,7 @@ abstract class AppDatabase : RoomDatabase() {
                 locationCity = "Malaybalay", locationMunicipal = "Bukidnon",
                 pictureUri = getDrawableUri("listing_7")
             ))
-            generateWeightHistory(animalId, neneBirthDate, 3.5, 30.0)
+            generateWeightHistory(animalId, neneBirthDate, 3.5, 30.0, forceWeightDrop = true)
 
             // Listing 8: Tisoy (Goat)
             val tisoyBirthDate = calculateBirthDate(2.5)

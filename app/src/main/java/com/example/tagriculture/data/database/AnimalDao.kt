@@ -24,4 +24,7 @@ interface AnimalDao {
 
     @Query("SELECT * FROM animals")
     fun getAllAnimalsForSeeding(): List<Animal>
+
+    @Query("SELECT * FROM animals WHERE id = :animalId")
+    fun getAnimalByIdAsLiveData(animalId: Long): LiveData<Animal?>
 }

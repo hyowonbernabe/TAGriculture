@@ -89,6 +89,26 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Readiness Alert Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/readiness_alert_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                app:cardCornerRadius="16dp"
+                tools:visibility="visible">
+                <TextView
+                    android:id="@+id/readiness_alert_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    tools:text="Alert: Ready for Market, Ready for Breeding" />
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Core Information Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -254,12 +274,13 @@
                         android:text="Analytics"
                         android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-                    <!-- Estimated Market Value -->
+                    <!-- Row 1: Estimated Market Value -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical">
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -270,10 +291,54 @@
                             android:id="@+id/text_market_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="end"
                             android:textStyle="bold"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:gravity="end"
                             tools:text="₱75,000.00 ($1,293.10 USD)" />
+                    </LinearLayout>
+
+                    <!-- Row 2: Feed Efficiency Index (FEI) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Feed Efficiency Index (FEI)"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+                        <TextView
+                            android:id="@+id/text_fei"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            tools:text="0.45" />
+                    </LinearLayout>
+
+                    <!-- Row 3: Condition Score -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Condition Score"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+                        <TextView
+                            android:id="@+id/text_condition_score"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            tools:text="Normal" />
                     </LinearLayout>
 
                 </LinearLayout>
