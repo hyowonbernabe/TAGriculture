@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tagriculture.R
 import com.example.tagriculture.data.database.Animal
+import android.net.Uri
+import java.io.File
 
 class AnimalAdapter(private val listener: (Animal) -> Unit) : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
 
@@ -40,7 +42,16 @@ class AnimalAdapter(private val listener: (Animal) -> Unit) : RecyclerView.Adapt
         holder.animalName.text = currentAnimal.name
         holder.animalInfo.text = "${currentAnimal.animalType}, ${currentAnimal.breed}"
         holder.animalWeight.text = "${currentAnimal.currentWeight} kg"
-        holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+        if (!currentAnimal.pictureUri.isNullOrEmpty()) {
+            val imageFile = File(currentAnimal.pictureUri!!)
+            if (imageFile.exists()) {
+                holder.animalImage.setImageURI(Uri.fromFile(imageFile))
+            } else {
+                holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+            }
+        } else {
+            holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+        }
 
         holder.bind(currentAnimal, listener)
     }
