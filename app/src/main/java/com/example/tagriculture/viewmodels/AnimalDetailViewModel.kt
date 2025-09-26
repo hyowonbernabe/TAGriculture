@@ -8,11 +8,23 @@ import com.example.tagriculture.data.database.AppDatabase
 import com.example.tagriculture.data.database.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 
 class AnimalDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     private val animalDao = AppDatabase.getDatabase(application).animalDao()
     private val tagDao = AppDatabase.getDatabase(application).tagDao()
+    private val _animalDetails = MutableLiveData<Animal?>()
+    val animalDetails: LiveData<Animal?> = _animalDetails
+
+    fun loadAnimalDetails(animalId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val animal = animalDao.getAnimalById(animalId)
+            _animalDetails.postValue(animal)
+        }
+    }
 
     fun saveNewAnimal(
         nfcTagId: String,
@@ -44,4 +56,6 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
             tagDao.insertTag(newTag)
         }
     }
+
+    // TODO: Add an updateAnimal function later
 }

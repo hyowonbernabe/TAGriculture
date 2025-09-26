@@ -48,7 +48,11 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
             result?.let {
                 when (it) {
                     is ScanResult.KnownAnimal -> {
-                        Toast.makeText(requireContext(), "Known Animal Scanned! ID: ${it.animalId}", Toast.LENGTH_LONG).show()
+                        Log.d("NFC", "Known animal scanned with ID: ${it.animalId}. Opening details.")
+                        val intent = Intent(requireActivity(), AnimalDetailActivity::class.java).apply {
+                            putExtra("ANIMAL_ID", it.animalId)
+                        }
+                        startActivity(intent)
                     }
                     is ScanResult.NewTag -> {
                         Log.d("NFC", "New tag detected: ${it.tagId}. Showing dialog.")

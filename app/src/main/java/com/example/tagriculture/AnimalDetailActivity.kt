@@ -51,9 +51,10 @@ class AnimalDetailActivity : AppCompatActivity() {
         }
 
         if (animalId != null) {
-            title = "Edit Animal Details"
+            title = "View / Edit Animal"
             Log.d("AnimalDetail", "Editing mode for animal ID: $animalId")
-            // TODO: Load existing animal data from the database
+            viewModel.loadAnimalDetails(animalId!!)
+            observeAnimalDetails()
         } else if (nfcTagId != null) {
             title = "Register New Animal"
             Log.d("AnimalDetail", "Registration mode for tag ID: $nfcTagId")
@@ -64,6 +65,28 @@ class AnimalDetailActivity : AppCompatActivity() {
         }
 
         setupAnimalTypeSpinner()
+    }
+
+    private fun observeAnimalDetails() {
+        viewModel.animalDetails.observe(this, { animal ->
+            animal?.let {
+                val nameEditText: TextInputEditText = findViewById(R.id.edit_text_name)
+                val breedEditText: TextInputEditText = findViewById(R.id.edit_text_breed)
+                val birthDateEditText: TextInputEditText = findViewById(R.id.edit_text_birth_date)
+                val birthWeightEditText: TextInputEditText = findViewById(R.id.edit_text_birth_weight)
+
+                nameEditText.setText(it.name)
+                breedEditText.setText(it.breed)
+                animalTypeSpinner.setText(it.animalType, false)
+                birthWeightEditText.setText(it.birthWeight.toString())
+
+                selectedBirthDate = it.birthDate
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                birthDateEditText.setText(simpleDateFormat.format(Date(it.birthDate)))
+
+                // TODO: Load the animal's image
+            }
+        })
     }
 
     private fun setupAnimalTypeSpinner() {
