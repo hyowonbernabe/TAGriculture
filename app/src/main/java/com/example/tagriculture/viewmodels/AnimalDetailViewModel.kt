@@ -56,7 +56,8 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
         name: String,
         breed: String,
         birthDate: Long,
-        birthWeight: Double
+        birthWeight: Double,
+        pictureUri: String?
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val newAnimal = Animal(
@@ -67,7 +68,8 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
                 birthWeight = birthWeight,
                 currentWeight = birthWeight,
                 locationCity = "Demo City",
-                locationMunicipal = "Demo Area"
+                locationMunicipal = "Demo Area",
+                pictureUri = pictureUri
             )
 
             val newAnimalId = animalDao.insertAnimal(newAnimal)
@@ -94,7 +96,8 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
         newName: String,
         newBreed: String,
         newBirthDate: Long,
-        newCurrentWeight: Double
+        newCurrentWeight: Double,
+        newPictureUri: String?
     ) {
         val weightHasChanged = animalToUpdate.currentWeight != newCurrentWeight
 
@@ -103,7 +106,8 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
             name = newName,
             breed = newBreed,
             birthDate = newBirthDate,
-            currentWeight = newCurrentWeight
+            currentWeight = newCurrentWeight,
+            pictureUri = newPictureUri
         )
 
         viewModelScope.launch(Dispatchers.IO) {

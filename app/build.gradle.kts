@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.fragment.ktx)
     implementation(libs.mpandroidchart)
+    implementation(libs.activity.ktx)
 }

@@ -1,5 +1,6 @@
 package com.example.tagriculture
 
+import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +29,10 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.example.tagriculture.data.database.WeightEntry
 import com.google.android.material.card.MaterialCardView
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import java.io.File
+import java.io.FileOutputStream
 
 class AnimalDetailActivity : AppCompatActivity() {
 
@@ -38,6 +44,7 @@ class AnimalDetailActivity : AppCompatActivity() {
     private lateinit var animalTypeSpinner: AutoCompleteTextView
     private val viewModel: AnimalDetailViewModel by viewModels()
     private var selectedBirthDate: Long? = null
+    private var selectedImageUri: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +55,15 @@ class AnimalDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         animalTypeSpinner = findViewById(R.id.animal_type_spinner)
+        val animalImageView: ImageView = findViewById(R.id.animal_image)
+        val addPhotoText: TextView = findViewById(R.id.text_add_photo)
+
+        val imageClickListener = View.OnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        animalImageView.setOnClickListener(imageClickListener)
+        addPhotoText.setOnClickListener(imageClickListener)
 
         val birthDateEditText: TextInputEditText = findViewById(R.id.edit_text_birth_date)
 
@@ -84,6 +100,42 @@ class AnimalDetailActivity : AppCompatActivity() {
         setupAnimalTypeSpinner()
     }
 
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            Log.d("PhotoPicker", "Selected URI: $uri")
+
+            val permanentUri = saveImageToInternalStorage(uri)
+            selectedImageUri = permanentUri
+
+            val animalImageView: ImageView = findViewById(R.id.animal_image)
+            animalImageView.setImageURI(Uri.parse(permanentUri))
+
+        } else {
+            Log.d("PhotoPicker", "No media selected")
+        }
+    }
+
+    private fun saveImageToInternalStorage(uri: Uri): String? {
+        try {
+            val inputStream = contentResolver.openInputStream(uri)
+
+            val file = File(filesDir, "animal_${System.currentTimeMillis()}.jpg")
+
+            val outputStream = FileOutputStream(file)
+
+            inputStream?.copyTo(outputStream)
+
+            inputStream?.close()
+            outputStream.close()
+
+            return file.absolutePath
+        } catch (e: Exception) {
+            Log.e("SaveImage", "Error saving image", e)
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
+            return null
+        }
+    }
+
     private fun observeAnimalDetails() {
         viewModel.animalDetails.observe(this, { animal ->
             animal?.let {
@@ -109,6 +161,14 @@ class AnimalDetailActivity : AppCompatActivity() {
                     fullText.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
+                val animalImageView: ImageView = findViewById(R.id.animal_image)
+                if (it.pictureUri != null) {
+                    val imageFile = File(it.pictureUri!!)
+                    if (imageFile.exists()) {
+                        animalImageView.setImageURI(Uri.fromFile(imageFile))
+                        selectedImageUri = it.pictureUri
+                    }
+                }
 
                 marketValueTextView.text = spannable
 
@@ -173,7 +233,8 @@ class AnimalDetailActivity : AppCompatActivity() {
                     newName = name,
                     newBreed = breed,
                     newBirthDate = selectedBirthDate!!,
-                    newCurrentWeight = currentWeight
+                    newCurrentWeight = currentWeight,
+                    newPictureUri = selectedImageUri ?: existingAnimal.pictureUri
                 )
                 Toast.makeText(this, "$name's details have been updated!", Toast.LENGTH_LONG).show()
             }
@@ -193,7 +254,8 @@ class AnimalDetailActivity : AppCompatActivity() {
                 name = name,
                 breed = breed,
                 birthDate = selectedBirthDate!!,
-                birthWeight = birthWeight
+                birthWeight = birthWeight,
+                pictureUri = selectedImageUri
             )
 
             Toast.makeText(this, "$name has been registered!", Toast.LENGTH_LONG).show()
