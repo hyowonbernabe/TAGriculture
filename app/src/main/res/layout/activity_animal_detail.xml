@@ -269,7 +269,8 @@
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
-                            tools:text="$1,250.50" />
+                            android:gravity="end"
+                            tools:text="₱75,000.00 ($1,293.10 USD)" />
                     </LinearLayout>
 
                 </LinearLayout>

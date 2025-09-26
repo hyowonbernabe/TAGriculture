@@ -1,6 +1,9 @@
 package com.example.tagriculture
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -94,8 +97,20 @@ class AnimalDetailActivity : AppCompatActivity() {
                     healthAlertCard.visibility = if (showAlert) View.VISIBLE else View.GONE
                 })
                 val marketValueTextView: TextView = findViewById(R.id.text_market_value)
-                val marketValue = it.currentWeight * 2.50
-                marketValueTextView.text = String.format(Locale.US, "$%,.2f", marketValue)
+                val marketValuePHP = it.currentWeight * 150.00
+                val marketValueUSD = marketValuePHP / 58.00
+                val phpString = String.format(Locale.US, "₱%,.2f", marketValuePHP)
+                val usdString = String.format(Locale.US, "($%,.2f USD)", marketValueUSD)
+                val fullText = "$phpString $usdString"
+                val spannable = SpannableString(fullText)
+                spannable.setSpan(
+                    ForegroundColorSpan(getColor(R.color.md_theme_onSurfaceVariant)),
+                    phpString.length + 1,
+                    fullText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                marketValueTextView.text = spannable
 
                 currentWeightEditText.setText(it.currentWeight.toString())
                 nameEditText.setText(it.name)
