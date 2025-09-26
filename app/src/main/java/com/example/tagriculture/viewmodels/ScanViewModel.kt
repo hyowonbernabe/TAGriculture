@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import com.example.tagriculture.data.database.Animal
 import com.example.tagriculture.data.database.AppDatabase
+import androidx.lifecycle.viewModelScope
 
 class ScanViewModel(application: Application) : AndroidViewModel(application) {
 

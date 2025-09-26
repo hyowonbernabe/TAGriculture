@@ -1,6 +1,5 @@
 package com.example.tagriculture
 
-// Keep necessary imports, but remove PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag as NfcTag
@@ -22,15 +21,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Log.d("DEBUG_NFC", "MainActivity onCreate")
+
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         bottomNavigationView.setupWithNavController(navController)
+
+        handleNfcIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handleNfcIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (NfcAdapter.ACTION_TECH_DISCOVERED == intent.action || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
+        setIntent(intent)
+        handleNfcIntent(intent)
+    }
+
+    private fun handleNfcIntent(intent: Intent?) {
+        if (intent != null && (intent.hasExtra(NfcAdapter.EXTRA_TAG) ||
+                    NfcAdapter.ACTION_TECH_DISCOVERED == intent.action ||
+                    NfcAdapter.ACTION_TAG_DISCOVERED == intent.action)) {
+
+            Log.d("DEBUG_NFC", "1. handleNfcIntent - Intent has NFC data. Action: ${intent.action}")
+
             val detectedTag: NfcTag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, NfcTag::class.java)
             } else {
@@ -38,12 +56,14 @@ class MainActivity : AppCompatActivity() {
                 intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             }
 
-            if (detectedTag != null) {
-                val nfcSerialNumber = bytesToHexString(detectedTag.id)
-                Log.d("NFC", "MainActivity received tag: $nfcSerialNumber")
-                // Pass the scanned data to the ViewModel.
+            detectedTag?.let {
+                val nfcSerialNumber = bytesToHexString(it.id)
+                Log.d("DEBUG_NFC", "2. handleNfcIntent - Tag detected: $nfcSerialNumber")
                 mainViewModel.onNfcTagScanned(nfcSerialNumber)
+                Log.d("DEBUG_NFC", "3. handleNfcIntent - Called mainViewModel.onNfcTagScanned")
             }
+
+            intent.removeExtra(NfcAdapter.EXTRA_TAG)
         }
     }
 
