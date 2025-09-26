@@ -19,9 +19,28 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
     private val weightEntryDao = AppDatabase.getDatabase(application).weightEntryDao()
     private val _animalDetails = MutableLiveData<Animal?>()
     val animalDetails: LiveData<Animal?> = _animalDetails
+    private val _healthAlert = MutableLiveData<Boolean>(false)
+    val healthAlert: LiveData<Boolean> = _healthAlert
 
     fun getWeightHistory(animalId: Long): LiveData<List<WeightEntry>> {
-        return weightEntryDao.getWeightHistoryForAnimal(animalId)
+        val historyLiveData = weightEntryDao.getWeightHistoryForAnimal(animalId)
+
+        historyLiveData.observeForever { history ->
+            if (history.size >= 2) {
+                val lastWeight = history.last().weight
+                val previousWeight = history[history.size - 2].weight
+                _healthAlert.postValue(lastWeight < previousWeight)
+            } else {
+                _healthAlert.postValue(false)
+            }
+        }
+
+        return historyLiveData
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        weightEntryDao.getWeightHistoryForAnimal(0).removeObserver {}
     }
 
     fun loadAnimalDetails(animalId: Long) {

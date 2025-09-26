@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -21,6 +23,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.example.tagriculture.data.database.WeightEntry
+import com.google.android.material.card.MaterialCardView
 
 class AnimalDetailActivity : AppCompatActivity() {
 
@@ -86,6 +89,13 @@ class AnimalDetailActivity : AppCompatActivity() {
                 val birthDateEditText: TextInputEditText = findViewById(R.id.edit_text_birth_date)
                 val birthWeightEditText: TextInputEditText = findViewById(R.id.edit_text_birth_weight)
                 val currentWeightEditText: TextInputEditText = findViewById(R.id.edit_text_current_weight)
+                val healthAlertCard: MaterialCardView = findViewById(R.id.health_alert_card)
+                viewModel.healthAlert.observe(this, { showAlert ->
+                    healthAlertCard.visibility = if (showAlert) View.VISIBLE else View.GONE
+                })
+                val marketValueTextView: TextView = findViewById(R.id.text_market_value)
+                val marketValue = it.currentWeight * 2.50
+                marketValueTextView.text = String.format(Locale.US, "$%,.2f", marketValue)
 
                 currentWeightEditText.setText(it.currentWeight.toString())
                 nameEditText.setText(it.name)
