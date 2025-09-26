@@ -125,29 +125,38 @@ class AnimalDetailActivity : AppCompatActivity() {
         val breed = breedEditText.text.toString()
         val birthWeight = birthWeightEditText.text.toString().toDoubleOrNull() ?: 0.0
 
-        if (nfcTagId == null) {
-            Toast.makeText(this, "Error: NFC Tag ID is missing", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (type.isBlank() || name.isBlank()) {
-            Toast.makeText(this, "Please fill in Animal Type and Name", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (selectedBirthDate == null) {
-            Toast.makeText(this, "Please select a Birth Date", Toast.LENGTH_SHORT).show()
-            return
-        }
+        if (animalId != null) {
+            viewModel.animalDetails.value?.let { existingAnimal ->
+                viewModel.updateAnimal(
+                    animalToUpdate = existingAnimal,
+                    newType = type,
+                    newName = name,
+                    newBreed = breed,
+                    newBirthDate = selectedBirthDate!!
+                )
+                Toast.makeText(this, "$name's details have been updated!", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            if (type.isBlank() || name.isBlank()) {
+                Toast.makeText(this, "Please fill in Animal Type and Name", Toast.LENGTH_SHORT).show()
+                return
+            }
+            if (selectedBirthDate == null) {
+                Toast.makeText(this, "Please select a Birth Date", Toast.LENGTH_SHORT).show()
+                return
+            }
 
-        viewModel.saveNewAnimal(
-            nfcTagId = nfcTagId!!,
-            animalType = type,
-            name = name,
-            breed = breed,
-            birthDate = selectedBirthDate!!,
-            birthWeight = birthWeight
-        )
+            viewModel.saveNewAnimal(
+                nfcTagId = nfcTagId!!,
+                animalType = type,
+                name = name,
+                breed = breed,
+                birthDate = selectedBirthDate!!,
+                birthWeight = birthWeight
+            )
 
-        Toast.makeText(this, "$name has been registered!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "$name has been registered!", Toast.LENGTH_LONG).show()
+        }
         finish()
     }
 

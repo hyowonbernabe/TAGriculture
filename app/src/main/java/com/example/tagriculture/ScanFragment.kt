@@ -24,7 +24,13 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
 
     private val scanViewModel: ScanViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val animalAdapter = AnimalAdapter()
+    private val animalAdapter = AnimalAdapter { selectedAnimal ->
+        Log.d("GridClick", "Clicked on animal ID: ${selectedAnimal.id}")
+        val intent = Intent(requireActivity(), AnimalDetailActivity::class.java).apply {
+            putExtra("ANIMAL_ID", selectedAnimal.id)
+        }
+        startActivity(intent)
+    }
     private var nfcAdapter: NfcAdapter? = null
 
     override fun onCreateView(

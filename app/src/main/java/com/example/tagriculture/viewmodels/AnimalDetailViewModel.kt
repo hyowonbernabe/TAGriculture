@@ -2,15 +2,14 @@ package com.example.tagriculture.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.tagriculture.data.database.Animal
 import com.example.tagriculture.data.database.AppDatabase
 import com.example.tagriculture.data.database.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 
 class AnimalDetailViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -57,5 +56,22 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // TODO: Add an updateAnimal function later
+    fun updateAnimal(
+        animalToUpdate: Animal,
+        newType: String,
+        newName: String,
+        newBreed: String,
+        newBirthDate: Long
+    ) {
+        val updatedAnimal = animalToUpdate.copy(
+            animalType = newType,
+            name = newName,
+            breed = newBreed,
+            birthDate = newBirthDate
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            animalDao.updateAnimal(updatedAnimal)
+        }
+    }
 }

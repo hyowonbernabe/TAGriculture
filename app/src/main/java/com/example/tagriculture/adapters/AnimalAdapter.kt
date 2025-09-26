@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tagriculture.R
 import com.example.tagriculture.data.database.Animal
 
-class AnimalAdapter : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
+class AnimalAdapter(private val listener: (Animal) -> Unit) : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
 
     private var animalList = emptyList<Animal>()
 
@@ -18,6 +18,10 @@ class AnimalAdapter : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
         val animalName: TextView = itemView.findViewById(R.id.animal_name)
         val animalInfo: TextView = itemView.findViewById(R.id.animal_info)
         val animalWeight: TextView = itemView.findViewById(R.id.animal_weight)
+
+        fun bind(animal: Animal, listener: (Animal) -> Unit) {
+            itemView.setOnClickListener { listener(animal) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimalViewHolder {
@@ -36,10 +40,9 @@ class AnimalAdapter : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
         holder.animalName.text = currentAnimal.name
         holder.animalInfo.text = "${currentAnimal.animalType}, ${currentAnimal.breed}"
         holder.animalWeight.text = "${currentAnimal.currentWeight} kg"
-
-        // TODO: Load image using a library like Glide or Coil later.
-        // For now placeholder
         holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+
+        holder.bind(currentAnimal, listener)
     }
 
     fun setData(animals: List<Animal>) {
