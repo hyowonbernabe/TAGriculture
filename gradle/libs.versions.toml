@@ -12,6 +12,7 @@ composeBom = "2025.09.01"
 material = "1.13.0"
 navigationFragmentKtx = "2.9.5"
 navigationUiKtx = "2.9.5"
+lottie = "6.6.9"
 
 [libraries]
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -32,6 +33,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

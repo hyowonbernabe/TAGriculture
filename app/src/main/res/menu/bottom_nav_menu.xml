@@ -3,21 +3,21 @@
     <item
         android:id="@+id/homeFragment"
         android:title="Home"
-        android:icon="@drawable/ic_launcher_foreground" /> <!-- Placeholder icon -->
+        android:icon="@drawable/ic_home" />
     <item
         android:id="@+id/messagesFragment"
         android:title="Messages"
-        android:icon="@drawable/ic_launcher_foreground" /> <!-- Placeholder icon -->
+        android:icon="@drawable/ic_messages" />
     <item
         android:id="@+id/scanFragment"
         android:title="Scan"
-        android:icon="@drawable/ic_launcher_foreground" /> <!-- Placeholder icon -->
+        android:icon="@drawable/ic_scan" />
     <item
         android:id="@+id/notificationsFragment"
         android:title="Notifications"
-        android:icon="@drawable/ic_launcher_foreground" /> <!-- Placeholder icon -->
+        android:icon="@drawable/ic_notifications" />
     <item
         android:id="@+id/profileFragment"
         android:title="Profile"
-        android:icon="@drawable/ic_launcher_foreground" /> <!-- Placeholder icon -->
+        android:icon="@drawable/ic_profile" />
 </menu>
