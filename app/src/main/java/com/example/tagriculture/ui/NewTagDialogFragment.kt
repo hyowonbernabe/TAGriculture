@@ -1,5 +1,6 @@
 package com.example.tagriculture.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
 import com.example.tagriculture.R
+import androidx.core.graphics.drawable.toDrawable
 
 class NewTagDialogFragment : DialogFragment() {
 
@@ -31,6 +33,9 @@ class NewTagDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
         val registerButton: Button = view.findViewById(R.id.btn_register_new)
         val reassignButton: Button = view.findViewById(R.id.btn_reassign)
 
