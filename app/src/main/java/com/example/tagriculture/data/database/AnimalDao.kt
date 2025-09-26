@@ -21,4 +21,7 @@ interface AnimalDao {
 
     @Query("SELECT * FROM animals ORDER BY name ASC")
     fun getAllAnimals(): LiveData<List<Animal>>
+
+    @Query("SELECT * FROM animals")
+    fun getAllAnimalsForSeeding(): List<Animal>
 }

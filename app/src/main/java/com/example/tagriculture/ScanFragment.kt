@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tagriculture.adapters.AnimalAdapter
+import com.example.tagriculture.adapters.GridSpacingItemDecoration
 import com.example.tagriculture.ui.NewTagDialogFragment
 import com.example.tagriculture.viewmodels.MainViewModel
 import com.example.tagriculture.viewmodels.ScanResult
@@ -40,6 +41,10 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
         nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
         val recyclerView: RecyclerView = view.findViewById(R.id.livestock_recycler_view)
         recyclerView.adapter = animalAdapter
+
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.grid_spacing)
+        recyclerView.addItemDecoration(GridSpacingItemDecoration(2, spacingInPixels, true))
+
         return view
     }
 

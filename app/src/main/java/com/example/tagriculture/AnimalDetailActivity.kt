@@ -169,10 +169,18 @@ class AnimalDetailActivity : AppCompatActivity() {
                 )
                 val animalImageView: ImageView = findViewById(R.id.animal_image)
                 if (it.pictureUri != null) {
-                    val imageFile = File(it.pictureUri!!)
-                    if (imageFile.exists()) {
-                        animalImageView.setImageURI(Uri.fromFile(imageFile))
-                        selectedImageUri = it.pictureUri
+                    val uriString = it.pictureUri!!
+                    val uri = Uri.parse(uriString)
+
+                    if (uri.scheme == "android.resource") {
+                        animalImageView.setImageURI(uri)
+                        selectedImageUri = uriString // Keep track of the current image URI
+                    } else {
+                        val imageFile = File(uriString)
+                        if (imageFile.exists()) {
+                            animalImageView.setImageURI(Uri.fromFile(imageFile))
+                            selectedImageUri = uriString
+                        }
                     }
                 }
 

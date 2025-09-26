@@ -43,14 +43,23 @@ class AnimalAdapter(private val listener: (Animal) -> Unit) : RecyclerView.Adapt
         holder.animalInfo.text = "${currentAnimal.animalType}, ${currentAnimal.breed}"
         holder.animalWeight.text = "${currentAnimal.currentWeight} kg"
         if (!currentAnimal.pictureUri.isNullOrEmpty()) {
-            val imageFile = File(currentAnimal.pictureUri!!)
-            if (imageFile.exists()) {
-                holder.animalImage.setImageURI(Uri.fromFile(imageFile))
+            val uriString = currentAnimal.pictureUri!!
+            val uri = Uri.parse(uriString)
+
+            // Check if the URI is a local file path or a resource URI
+            if (uri.scheme == "android.resource") {
+                // It's a mock data image from drawables
+                holder.animalImage.setImageURI(uri)
             } else {
-                holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+                val imageFile = File(uriString)
+                if (imageFile.exists()) {
+                    holder.animalImage.setImageURI(Uri.fromFile(imageFile))
+                } else {
+                    holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground) // Fallback
+                }
             }
         } else {
-            holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground)
+            holder.animalImage.setImageResource(R.drawable.ic_launcher_foreground) // Fallback
         }
 
         holder.bind(currentAnimal, listener)
