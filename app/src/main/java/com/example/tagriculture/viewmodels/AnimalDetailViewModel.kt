@@ -46,21 +46,12 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
             if (animal != null && !history.isNullOrEmpty()) {
                 val report = AnalyticsEngine.generateReport(animal, history)
                 analyticsReport.value = report
-                // Generate readiness notifications when animal details are updated
-                generateReadinessNotifications(animal, report.readinessAlerts)
             }
         }
         analyticsReport.addSource(weightHistory) { history ->
             val animal = animalDetails.value
             if (animal != null && !history.isNullOrEmpty()) {
                 analyticsReport.value = AnalyticsEngine.generateReport(animal, history)
-            }
-        }
-
-        healthAlert.observeForever { isAlert ->
-            val animal = animalDetails.value
-            if (isAlert && animal != null) {
-                generateHealthNotification(animal)
             }
         }
     }
@@ -73,34 +64,6 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
     fun loadAnimal(animalId: Long) {
         if (_loadedAnimalId.value == animalId) return
         _loadedAnimalId.value = animalId
-    }
-
-    private fun generateReadinessNotifications(animal: Animal, alerts: List<Pair<com.example.tagriculture.analytics.AlertType, String>>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            alerts.forEach { alertPair ->
-                val notification = Notification(
-                    animalId = animal.id,
-                    animalName = animal.name,
-                    alertType = alertPair.first.name,
-                    message = alertPair.second,
-                    timestamp = System.currentTimeMillis()
-                )
-                notificationDao.insertNotification(notification)
-            }
-        }
-    }
-
-    private fun generateHealthNotification(animal: Animal) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val notification = Notification(
-                animalId = animal.id,
-                animalName = animal.name,
-                alertType = "HEALTH",
-                message = "Weight has decreased since last measurement.",
-                timestamp = System.currentTimeMillis()
-            )
-            notificationDao.insertNotification(notification)
-        }
     }
 
     fun saveNewAnimal(
