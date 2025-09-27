@@ -19,7 +19,8 @@ data class AnalyticsReport(
     val chartData: ChartData,
     val ageString: String,
     val lifespanAlert: String?,
-    val grade: String
+    val grade: String,
+    val averageDailyGain: Double
 )
 
 object AnalyticsEngine {
@@ -67,8 +68,23 @@ object AnalyticsEngine {
             ),
             ageString = calculateAgeString(animal.birthDate),
             lifespanAlert = checkLifespan(animal),
-            grade = determineGrade(animal)
+            grade = determineGrade(animal),
+            averageDailyGain = calculateADG(history)
         )
+    }
+
+    private fun calculateADG(history: List<WeightEntry>): Double {
+        if (history.size < 2) return 0.0
+
+        val sortedHistory = history.sortedBy { it.date }
+        val firstEntry = sortedHistory.first()
+        val lastEntry = sortedHistory.last()
+
+        val durationDays = TimeUnit.MILLISECONDS.toDays(lastEntry.date - firstEntry.date)
+        if (durationDays < 1) return 0.0
+
+        val totalGain = lastEntry.weight - firstEntry.weight
+        return totalGain / durationDays
     }
 
     private fun determineGrade(animal: Animal): String {

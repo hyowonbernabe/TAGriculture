@@ -163,10 +163,20 @@ class AnimalDetailActivity : AppCompatActivity(), AddWeightDialogFragment.AddWei
     }
 
     private fun showAnalyticsInfoDialog() {
-        val message = "Feed Efficiency Index (FEI):\n" +
-                "A ratio of the animal's weight to its age in days. A higher number suggests better and more efficient growth.\n\n" +
+        val message = "Estimated Market Value:\n" +
+                "A real-time calculation based on the animal's current weight and a standard market rate (e.g., ₱150/kg for cattle). This provides a quick snapshot of potential revenue.\n\n" +
+
+                "Average Daily Gain (ADG):\n" +
+                "Measures the average weight an animal has gained per day since its first weigh-in. It is a key indicator of growth performance and health.\n\n" +
+
+                "Feed Efficiency Index (FEI):\n" +
+                "A ratio of the animal's total weight to its age in days. A higher number suggests better and more efficient conversion of feed to body mass.\n\n" +
+
                 "Condition Score:\n" +
-                "A simplified classification (Underweight, Normal, Overweight) based on the animal's growth rate, helping you quickly assess its health."
+                "A simplified health check (e.g., Underweight, Normal) based on the animal's growth rate, helping you quickly assess its overall condition.\n\n" +
+
+                "Overall Grade:\n" +
+                "A suggested grade (A, B, C) automatically calculated from key metrics like weight and growth efficiency. It helps in quickly ranking animals for sale or breeding."
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Analytics Explained")
@@ -234,6 +244,8 @@ class AnimalDetailActivity : AppCompatActivity(), AddWeightDialogFragment.AddWei
                 conditionTextView.text = it.conditionScore
                 val gradeTextView: TextView = findViewById(R.id.text_grade)
                 gradeTextView.text = it.grade
+                val adgTextView: TextView = findViewById(R.id.text_adg)
+                adgTextView.text = String.format(Locale.US, "%.2f kg/day", it.averageDailyGain)
                 if (it.readinessAlerts.isNotEmpty()) {
                     it.readinessAlerts.forEach { alertPair ->
                         val alertTextView = TextView(this).apply {
