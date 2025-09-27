@@ -19,5 +19,6 @@ data class Animal(
     val locationCity: String,
     val locationMunicipal: String,
 
-    var pictureUri: String? = null
+    var pictureUri: String? = null,
+    var grade: String? = null
 )

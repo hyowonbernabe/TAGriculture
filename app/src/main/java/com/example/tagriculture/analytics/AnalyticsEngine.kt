@@ -4,7 +4,6 @@ import com.example.tagriculture.data.database.Animal
 import com.example.tagriculture.data.database.WeightEntry
 import com.github.mikephil.charting.data.Entry
 import java.util.concurrent.TimeUnit
-
 enum class AlertType { MARKET, BREEDING }
 
 data class ChartData(
@@ -19,7 +18,8 @@ data class AnalyticsReport(
     val readinessAlerts: List<Pair<AlertType, String>>,
     val chartData: ChartData,
     val ageString: String,
-    val lifespanAlert: String?
+    val lifespanAlert: String?,
+    val grade: String
 )
 
 object AnalyticsEngine {
@@ -66,8 +66,41 @@ object AnalyticsEngine {
                 idealCurve = generateIdealCurve(animal),
             ),
             ageString = calculateAgeString(animal.birthDate),
-            lifespanAlert = checkLifespan(animal)
+            lifespanAlert = checkLifespan(animal),
+            grade = determineGrade(animal)
         )
+    }
+
+    private fun determineGrade(animal: Animal): String {
+        val fei = calculateFEI(animal)
+        return when (animal.animalType) {
+            "Cattle" -> when {
+                fei > 0.6 && animal.currentWeight > 450 -> "A"
+                fei > 0.45 && animal.currentWeight > 350 -> "B"
+                else -> "C"
+            }
+            "Pig" -> when {
+                fei > 0.4 && animal.currentWeight > 100 -> "A"
+                fei > 0.3 -> "B"
+                else -> "C"
+            }
+            "Goat", "Sheep" -> when {
+                fei > 0.06 -> "A"
+                fei > 0.04 -> "B"
+                else -> "C"
+            }
+            "Horse" -> when {
+                fei > 0.25 -> "A"
+                fei > 0.15 -> "B"
+                else -> "C"
+            }
+            "Buffalo" -> when {
+                fei > 0.3 -> "A"
+                fei > 0.2 -> "B"
+                else -> "C"
+            }
+            else -> "N/A"
+        }
     }
 
     private fun calculateAgeString(birthDate: Long): String {
@@ -160,6 +193,21 @@ object AnalyticsEngine {
                 fei < 0.04 -> "Underweight"
                 fei > 0.08 -> "Overweight"
                 else -> "Normal"
+            }
+            "Horse" -> when {
+                fei < 0.15 -> "Lean"
+                fei > 0.30 -> "Heavy"
+                else -> "Ideal"
+            }
+            "Buffalo" -> when {
+                fei < 0.2 -> "Underweight"
+                fei > 0.35 -> "Overweight"
+                else -> "Normal"
+            }
+            "Pig" -> when {
+                fei < 0.3 -> "Lean"
+                fei > 0.5 -> "Overweight"
+                else -> "Ideal"
             }
             else -> "N/A"
         }

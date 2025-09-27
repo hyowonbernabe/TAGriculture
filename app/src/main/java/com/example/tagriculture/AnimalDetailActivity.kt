@@ -232,6 +232,8 @@ class AnimalDetailActivity : AppCompatActivity(), AddWeightDialogFragment.AddWei
             report?.let {
                 feiTextView.text = String.format(Locale.US, "%.2f", it.feedEfficiencyIndex)
                 conditionTextView.text = it.conditionScore
+                val gradeTextView: TextView = findViewById(R.id.text_grade)
+                gradeTextView.text = it.grade
                 if (it.readinessAlerts.isNotEmpty()) {
                     it.readinessAlerts.forEach { alertPair ->
                         val alertTextView = TextView(this).apply {

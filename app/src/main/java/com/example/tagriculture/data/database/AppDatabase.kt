@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
 
-@Database(entities = [Animal::class, Tag::class, WeightEntry::class, Notification::class], version = 3, exportSchema = false)
+@Database(entities = [Animal::class, Tag::class, WeightEntry::class, Notification::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun animalDao(): AnimalDao
