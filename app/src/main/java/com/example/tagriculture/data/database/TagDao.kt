@@ -12,4 +12,7 @@ interface TagDao {
 
     @Query("SELECT * FROM tags WHERE nfcSerialNumber = :serialNumber")
     suspend fun getTagBySerial(serialNumber: String): Tag?
+
+    @Query("UPDATE tags SET animalId = NULL WHERE animalId = :animalId")
+    suspend fun unassignTagFromAnimal(animalId: Long)
 }

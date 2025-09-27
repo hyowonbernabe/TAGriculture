@@ -14,6 +14,7 @@ class NewTagDialogFragment : DialogFragment() {
 
     interface NewTagDialogListener {
         fun onRegisterClicked(tagId: String)
+        fun onReassignClicked(tagId: String)
     }
 
     private var serialNumber: String? = null
@@ -45,7 +46,12 @@ class NewTagDialogFragment : DialogFragment() {
             }
             dismiss()
         }
-        reassignButton.setOnClickListener { /* TODO */ dismiss() }
+        reassignButton.setOnClickListener {
+            serialNumber?.let {
+                (targetFragment as? NewTagDialogListener)?.onReassignClicked(it)
+            }
+            dismiss()
+        }
     }
 
     companion object {

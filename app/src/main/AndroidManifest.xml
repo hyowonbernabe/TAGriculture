@@ -17,29 +17,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TAGriculture">
-
+        <activity
+            android:name=".ReassignTagActivity"
+            android:exported="false" />
         <activity
             android:name=".LauncherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".OnboardingActivity"
             android:exported="false" />
-
         <activity
             android:name=".AnimalDetailActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:launchMode="singleTop" />
-
     </application>
 
 </manifest>

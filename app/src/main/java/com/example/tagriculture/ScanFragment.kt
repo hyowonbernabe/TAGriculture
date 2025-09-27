@@ -159,4 +159,12 @@ class ScanFragment : Fragment(), NewTagDialogFragment.NewTagDialogListener {
         }
         startActivity(intent)
     }
+
+    override fun onReassignClicked(tagId: String) {
+        Log.d("NFC", "Reassign button clicked for tag: $tagId")
+        val intent = Intent(requireActivity(), ReassignTagActivity::class.java).apply {
+            putExtra("NFC_TAG_ID", tagId)
+        }
+        startActivity(intent)
+    }
 }
