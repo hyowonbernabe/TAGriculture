@@ -15,8 +15,8 @@ class OnboardingAdapter(activity: FragmentActivity) : FragmentStateAdapter(activ
             R.drawable.onboarding_slide_1
         ),
         OnboardingSlideFragment.newInstance(
-            "Smart Tracking with NFC",
-            "With TAGriculture, each animal’s RFID/NFC ear tag becomes its digital identity. Simply scan the tag with your phone to instantly view, register, or update livestock information.",
+            "Smart Tracking with RFID",
+            "With TAGriculture, each animal’s RFID ear tag becomes its digital identity. Simply scan the tag with your phone to instantly view, register, or update livestock information.",
             R.drawable.onboarding_slide_2
         ),
         OnboardingSlideFragment.newInstance(
