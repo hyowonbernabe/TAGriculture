@@ -8,6 +8,7 @@
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
     app:cardBackgroundColor="@color/brand_green">
+    <!-- Change the color above this line -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

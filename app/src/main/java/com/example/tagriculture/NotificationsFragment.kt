@@ -1,35 +1,45 @@
 package com.example.tagriculture
 
-import android.content.Intent
+import NotificationsViewModel
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tagriculture.adapters.NotificationsAdapter
 
 class NotificationsFragment : Fragment() {
+
+    private val viewModel: NotificationsViewModel by viewModels()
+    private val notificationsAdapter = NotificationsAdapter()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_placeholder, container, false)
+        return inflater.inflate(R.layout.fragment_notifications, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val titleView: TextView = view.findViewById(R.id.placeholder_title)
-        val textView: TextView = view.findViewById(R.id.placeholder_text)
-        val button: Button = view.findViewById(R.id.btn_tutorial)
+        val recyclerView: RecyclerView = view.findViewById(R.id.notifications_recycler_view)
+        recyclerView.adapter = notificationsAdapter
 
-        titleView.text = "Notifications"
-        textView.text = "This screen is a placeholder for the Notifications center. In a full version, this will deliver timely alerts to users about their farm and market activity. It will show important updates like new messages, offers on their animals, and other relevant information."
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val dividerItemDecoration = DividerItemDecoration(recyclerView.context, layoutManager.orientation)
+        recyclerView.addItemDecoration(dividerItemDecoration)
 
-        button.setOnClickListener {
-            val intent = Intent(requireActivity(), OnboardingActivity::class.java)
-            startActivity(intent)
+        viewModel.allNotifications.observe(viewLifecycleOwner) { notifications ->
+            notificationsAdapter.setData(notifications)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }

@@ -37,7 +37,6 @@ class AnimalAdapter(
         private val calendarButton: ImageButton = itemView.findViewById(R.id.btn_calendar)
 
         fun bind() {
-            // Set up listeners that call the lambdas passed to the adapter
             searchInput.addTextChangedListener { text ->
                 onSearchQueryChanged(text.toString())
             }

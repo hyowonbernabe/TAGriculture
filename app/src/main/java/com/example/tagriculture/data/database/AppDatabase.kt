@@ -11,12 +11,13 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
 
-@Database(entities = [Animal::class, Tag::class, WeightEntry::class], version = 2, exportSchema = false)
+@Database(entities = [Animal::class, Tag::class, WeightEntry::class, Notification::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun animalDao(): AnimalDao
     abstract fun tagDao(): TagDao
     abstract fun weightEntryDao(): WeightEntryDao
+    abstract fun notificationDao(): NotificationDao
 
     companion object {
         @Volatile

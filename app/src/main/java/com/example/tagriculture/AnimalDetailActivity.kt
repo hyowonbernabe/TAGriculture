@@ -11,7 +11,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -38,6 +40,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AnimalDetailActivity : AppCompatActivity() {
 
@@ -130,6 +133,25 @@ class AnimalDetailActivity : AppCompatActivity() {
         }
         animalImageView.setOnClickListener(imageClickListener)
         addPhotoText.setOnClickListener(imageClickListener)
+        val infoButton: ImageButton = findViewById(R.id.btn_analytics_info)
+        infoButton.setOnClickListener {
+            showAnalyticsInfoDialog()
+        }
+    }
+
+    private fun showAnalyticsInfoDialog() {
+        val message = "Feed Efficiency Index (FEI):\n" +
+                "A ratio of the animal's weight to its age in days. A higher number suggests better and more efficient growth.\n\n" +
+                "Condition Score:\n" +
+                "A simplified classification (Underweight, Normal, Overweight) based on the animal's growth rate, helping you quickly assess its health."
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Analytics Explained")
+            .setMessage(message)
+            .setPositiveButton("Got it") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun setupObservers() {
@@ -181,17 +203,39 @@ class AnimalDetailActivity : AppCompatActivity() {
 
         val feiTextView: TextView = findViewById(R.id.text_fei)
         val conditionTextView: TextView = findViewById(R.id.text_condition_score)
-        val readinessCard: MaterialCardView = findViewById(R.id.readiness_alert_card)
-        val readinessText: TextView = findViewById(R.id.readiness_alert_text)
+        val readinessContainer: LinearLayout = findViewById(R.id.readiness_alerts_container)
+        readinessContainer.removeAllViews()
         viewModel.analyticsReport.observe(this) { report ->
             report?.let {
                 feiTextView.text = String.format(Locale.US, "%.2f", it.feedEfficiencyIndex)
                 conditionTextView.text = it.conditionScore
                 if (it.readinessAlerts.isNotEmpty()) {
-                    readinessText.text = "Alert: " + it.readinessAlerts.joinToString(", ")
-                    readinessCard.visibility = View.VISIBLE
-                } else {
-                    readinessCard.visibility = View.GONE
+                    it.readinessAlerts.forEach { alertPair ->
+                        val alertTextView = TextView(this).apply {
+                            text = alertPair.second // The alert message
+                            setPadding(32, 24, 32, 24)
+
+                            when (alertPair.first) {
+                                com.example.tagriculture.analytics.AlertType.MARKET -> {
+                                    background = ContextCompat.getDrawable(this@AnimalDetailActivity, R.drawable.alert_background_green)
+                                    setTextColor(ContextCompat.getColor(this@AnimalDetailActivity, R.color.md_theme_onPrimaryContainer))
+                                }
+                                com.example.tagriculture.analytics.AlertType.BREEDING -> {
+                                    background = ContextCompat.getDrawable(this@AnimalDetailActivity, R.drawable.alert_background_pink)
+                                    setTextColor(ContextCompat.getColor(this@AnimalDetailActivity, R.color.white))
+                                }
+                            }
+
+                            val params = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            val marginBottom = (8 * resources.displayMetrics.density).toInt()
+                            params.setMargins(0, 0, 0, marginBottom)
+                            layoutParams = params
+                        }
+                        readinessContainer.addView(alertTextView)
+                    }
                 }
                 setupWeightChart(it.chartData)
 

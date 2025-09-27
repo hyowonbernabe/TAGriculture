@@ -5,6 +5,8 @@ import com.example.tagriculture.data.database.WeightEntry
 import com.github.mikephil.charting.data.Entry
 import java.util.concurrent.TimeUnit
 
+enum class AlertType { MARKET, BREEDING }
+
 data class ChartData(
     val actualHistory: List<Entry>,
     val projectedHistory: List<Entry>,
@@ -14,7 +16,7 @@ data class ChartData(
 data class AnalyticsReport(
     val feedEfficiencyIndex: Double,
     val conditionScore: String,
-    val readinessAlerts: List<String>,
+    val readinessAlerts: List<Pair<AlertType, String>>,
     val chartData: ChartData,
     val ageString: String,
     val lifespanAlert: String?
@@ -163,17 +165,17 @@ object AnalyticsEngine {
         }
     }
 
-    private fun checkReadiness(animal: Animal): List<String> {
-        val alerts = mutableListOf<String>()
+    private fun checkReadiness(animal: Animal): List<Pair<AlertType, String>> {
+        val alerts = mutableListOf<Pair<AlertType, String>>()
         val ageInMillis = System.currentTimeMillis() - animal.birthDate
         val ageInYears = TimeUnit.MILLISECONDS.toDays(ageInMillis) / 365.0
 
         if (animal.animalType == "Cattle") {
             if (ageInYears > 1.8 && animal.currentWeight > 350) {
-                alerts.add("Ready for Market")
+                alerts.add(Pair(AlertType.MARKET, "Ready for Market"))
             }
             if (ageInYears > 1.5) {
-                alerts.add("Ready for Breeding")
+                alerts.add(Pair(AlertType.BREEDING, "Ready for Breeding"))
             }
         }
         return alerts
