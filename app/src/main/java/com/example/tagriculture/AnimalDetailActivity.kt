@@ -80,8 +80,6 @@ class AnimalDetailActivity : AppCompatActivity(), AddWeightDialogFragment.AddWei
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_animal_detail)
 
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -104,8 +102,19 @@ class AnimalDetailActivity : AppCompatActivity(), AddWeightDialogFragment.AddWei
             title = "View / Edit Animal"
             viewModel.loadAnimal(animalId!!)
             setupObservers()
+
+            currentWeightEditText.isFocusable = false
+            currentWeightEditText.isFocusableInTouchMode = false
+            currentWeightEditText.isClickable = true
+
         } else if (nfcTagId != null) {
             title = "Register New Animal"
+
+            currentWeightEditText.isFocusable = true
+            currentWeightEditText.isFocusableInTouchMode = true
+            currentWeightEditText.isClickable = false
+            (currentWeightEditText.parent.parent as? View)?.visibility = View.GONE
+
         } else {
             title = "Error"
             Toast.makeText(this, "No animal or tag ID provided", Toast.LENGTH_LONG).show()
