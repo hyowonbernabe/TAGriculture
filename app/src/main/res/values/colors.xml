@@ -36,4 +36,7 @@
     <color name="md_theme_surfaceTint">#57691B</color>
     <color name="md_theme_outlineVariant">#C6C8B9</color>
     <color name="md_theme_scrim">#000000</color>
+
+    <color name="chart_blue">#0288D1</color>
+    <color name="chart_red">#D32F2F</color>
 </resources>
