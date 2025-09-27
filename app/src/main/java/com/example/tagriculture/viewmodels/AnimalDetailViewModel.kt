@@ -134,25 +134,35 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
         newName: String,
         newBreed: String,
         newBirthDate: Long,
-        newCurrentWeight: Double,
         newPictureUri: String?
     ) {
-        val weightHasChanged = animalToUpdate.currentWeight != newCurrentWeight
 
         val updatedAnimal = animalToUpdate.copy(
-            animalType = newType, name = newName, breed = newBreed, birthDate = newBirthDate,
-            currentWeight = newCurrentWeight, pictureUri = newPictureUri
+            animalType = newType,
+            name = newName,
+            breed = newBreed,
+            birthDate = newBirthDate,
+            pictureUri = newPictureUri
         )
 
         viewModelScope.launch(Dispatchers.IO) {
             animalDao.updateAnimal(updatedAnimal)
-            if (weightHasChanged) {
+        }
+    }
+
+    fun addNewWeightEntry(animalId: Long, newWeight: Double, date: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val animalToUpdate = animalDao.getAnimalById(animalId)
+            if (animalToUpdate != null) {
                 val newWeightEntry = WeightEntry(
-                    animalId = updatedAnimal.id,
-                    weight = newCurrentWeight,
-                    date = System.currentTimeMillis()
+                    animalId = animalId,
+                    weight = newWeight,
+                    date = date
                 )
                 weightEntryDao.insertWeightEntry(newWeightEntry)
+
+                val updatedAnimal = animalToUpdate.copy(currentWeight = newWeight)
+                animalDao.updateAnimal(updatedAnimal)
             }
         }
     }

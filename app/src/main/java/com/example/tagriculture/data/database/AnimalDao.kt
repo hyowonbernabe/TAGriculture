@@ -17,7 +17,7 @@ interface AnimalDao {
     suspend fun updateAnimal(animal: Animal)
 
     @Query("SELECT * FROM animals WHERE id = :animalId")
-    suspend fun getAnimalById(animalId: Long): Animal?
+    fun getAnimalById(animalId: Long): Animal?
 
     @Query("SELECT * FROM animals ORDER BY name ASC")
     fun getAllAnimals(): LiveData<List<Animal>>

@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.example.tagriculture.ui.AddWeightDialogFragment
 import com.example.tagriculture.viewmodels.AnimalDetailViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
@@ -42,7 +43,7 @@ import java.util.Date
 import java.util.Locale
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class AnimalDetailActivity : AppCompatActivity() {
+class AnimalDetailActivity : AppCompatActivity(), AddWeightDialogFragment.AddWeightDialogListener {
 
     private val viewModel: AnimalDetailViewModel by viewModels()
 
@@ -136,6 +137,19 @@ class AnimalDetailActivity : AppCompatActivity() {
         val infoButton: ImageButton = findViewById(R.id.btn_analytics_info)
         infoButton.setOnClickListener {
             showAnalyticsInfoDialog()
+        }
+        currentWeightEditText.setOnClickListener {
+            viewModel.animalDetails.value?.let { animal ->
+                AddWeightDialogFragment.newInstance(animal.currentWeight)
+                    .show(supportFragmentManager, "AddWeightDialog")
+            }
+        }
+    }
+
+    override fun onWeightEntryConfirmed(weight: Double, date: Long) {
+        animalId?.let {
+            viewModel.addNewWeightEntry(it, weight, date)
+            Toast.makeText(this, "New weight record saved", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -269,8 +283,8 @@ class AnimalDetailActivity : AppCompatActivity() {
         val name = nameEditText.text.toString()
         val breed = breedEditText.text.toString()
         val birthWeight = birthWeightEditText.text.toString().toDoubleOrNull() ?: 0.0
-        val currentWeight = currentWeightEditText.text.toString().toDoubleOrNull() ?: 0.0
 
+        // Validation
         if (name.isBlank() || type.isBlank()) {
             Toast.makeText(this, "Please fill in Animal Type and Name", Toast.LENGTH_SHORT).show()
             return
@@ -288,9 +302,9 @@ class AnimalDetailActivity : AppCompatActivity() {
                     newName = name,
                     newBreed = breed,
                     newBirthDate = selectedBirthDate!!,
-                    newCurrentWeight = currentWeight,
                     newPictureUri = selectedImageUri
                 )
+
                 Toast.makeText(this, "$name's details have been updated!", Toast.LENGTH_LONG).show()
             }
         } else {
@@ -309,6 +323,7 @@ class AnimalDetailActivity : AppCompatActivity() {
             )
             Toast.makeText(this, "$name has been registered!", Toast.LENGTH_LONG).show()
         }
+
         finish()
     }
 
