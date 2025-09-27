@@ -17,8 +17,6 @@ import com.example.tagriculture.data.database.WeightEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-// The 'import androidx.lifecycle.Transformations' line has been removed.
-
 class AnimalDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     private val animalDao = AppDatabase.getDatabase(application).animalDao()
@@ -26,24 +24,16 @@ class AnimalDetailViewModel(application: Application) : AndroidViewModel(applica
     private val weightEntryDao = AppDatabase.getDatabase(application).weightEntryDao()
 
     private val _loadedAnimalId = MutableLiveData<Long>()
-
-    // --- REFACTORED using .switchMap extension function ---
     val animalDetails: LiveData<Animal?> = _loadedAnimalId.switchMap { id ->
         animalDao.getAnimalByIdAsLiveData(id)
     }
-
-    // --- REFACTORED using .switchMap extension function ---
     val weightHistory: LiveData<List<WeightEntry>> = _loadedAnimalId.switchMap { id ->
         weightEntryDao.getWeightHistoryForAnimal(id)
     }
-
     val analyticsReport = MediatorLiveData<AnalyticsReport>()
-
-    // --- REFACTORED using .map extension function ---
     val healthAlert: LiveData<Boolean> = weightHistory.map { history ->
         history != null && history.size >= 2 && history.last().weight < history[history.size - 2].weight
     }
-
     init {
         analyticsReport.addSource(animalDetails) { animal ->
             val history = weightHistory.value
