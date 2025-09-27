@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This inset drawable is the container that TabLayout will stretch.
+The 'drawable' inside, our dot_selector, will remain at its
+original size and be centered within the insets.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/dot_selector"
+    android:insetLeft="8dp"
+    android:insetTop="8dp"
+    android:insetRight="8dp"
+    android:insetBottom="8dp" />

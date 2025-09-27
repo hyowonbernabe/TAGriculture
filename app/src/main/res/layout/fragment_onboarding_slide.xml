@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/slide_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        tools:src="@drawable/ic_launcher_background"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:id="@+id/slide_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        tools:text="Welcome to TAGriculture" />
+
+    <TextView
+        android:id="@+id/slide_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceBody1"
+        tools:text="Say goodbye to manual livestock tracking on paper. TAGriculture digitizes your farm records." />
+</LinearLayout>
